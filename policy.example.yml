@@ -25,12 +25,13 @@ policy:
   pdfPath: docs/FlexVertex_Mobile_Money_Credit_Policy_Guidelines.pdf
   materializeOnStart: true
 
+# Demos require FlexVertex Iron running. Set passwords to match your local Iron Edition
+# (policy.local.yml or edit locally — never commit real passwords).
 flexvertex:
-  enabled: false
+  enabled: true
   host: localhost
   port: 10000
   adminPath: /System/System/System/Admin
-  # Set via local policy.local.yml or edit locally — never commit real passwords.
   adminPassword: REPLACE_ME
   domain: TTACS
   nexus: Scorer

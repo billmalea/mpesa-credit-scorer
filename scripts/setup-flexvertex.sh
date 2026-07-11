@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Install FlexVertex Iron locally and wire the credit scorer to it.
+# Required for a full demo: install FlexVertex Iron locally and wire the credit scorer to it.
+# FlexVertex audit graph is a core demo pillar (not optional).
 # Docs: https://docs.flexvertex.com/en/iron-installation
 set -euo pipefail
 
@@ -66,16 +67,18 @@ mvn -q -Pflexvertex -DskipTests package
 
 cat <<EOF
 
-FlexVertex + M-Pesa Credit Scorer are ready.
+FlexVertex + M-Pesa Credit Scorer are ready for a full demo.
 
   FlexVertex Web UI:  ${FLEXVERTEX_WEB_UI:-http://localhost:8080}
     Admin login:      /System/System/System/Admin
     Password:         see FLEXVERTEX_PASSWORD in $REPO_ROOT/.env
 
   Credit scorer UI:   http://localhost:8091/
-  Enable audit graph: set flexvertex.enabled: true in policy.yml (already set if you ran full setup)
+  Audit graph:        flexvertex.enabled: true in policy.yml (demo default)
+                      Set adminPassword / underwriterPassword to match Iron Edition.
 
 Next:
   ./scripts/run.sh serve
+  # After evaluate: reconstruct in the UI + inspect TTACS/Scorer/MpesaCredit in Cartographer
 
 EOF

@@ -76,6 +76,8 @@ echo " Local:        $URL"
 echo " Auth user:    $USER_PART"
 echo " Auth pass:    (see $CRED_FILE — not printed)"
 echo
+echo " Full demo:    FlexVertex Iron must be running locally"
+echo "               (audit graph is core — stays on loopback)."
 echo " Not exposed:  FlexVertex UI :8080, client API :10000,"
 echo "               policy.yml passwords, real PDF extracts"
 echo " Open the public URL, then enter Basic Auth when prompted."

@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# Build and run the scorer. When lib/ has FlexVertex client JARs, uses -Pflexvertex.
+# Full demos require FlexVertex Iron + flexvertex.enabled: true (see setup-flexvertex.sh).
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"

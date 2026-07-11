@@ -24,8 +24,9 @@ policy:
   pdfPath: docs/FlexVertex_Mobile_Money_Credit_Policy_Guidelines.pdf
   materializeOnStart: true
 
+# Demos require FlexVertex Iron running + real local passwords matching your install.
 flexvertex:
-  enabled: false
+  enabled: true
   host: localhost
   port: 10000
   adminPath: /System/System/System/Admin

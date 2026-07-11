@@ -15,6 +15,9 @@ public final class DecisionStoreFactory {
             Path policyFilePath,
             PolicyMaterializer.MaterializedPolicy materialized) {
         if (!policy.flexvertex.enabled) {
+            System.err.println(
+                    "FlexVertex disabled (flexvertex.enabled=false); using NoOpDecisionStore — "
+                            + "demo incomplete without FlexVertex audit graph");
             return new NoOpDecisionStore();
         }
 
@@ -28,7 +31,9 @@ public final class DecisionStoreFactory {
             decisionStore.materializePolicy(materialized, policyFilePath);
             return decisionStore;
         } catch (Throwable ex) {
-            System.err.println("FlexVertex bootstrap failed, using in-memory mode: " + ex.getMessage());
+            System.err.println(
+                    "FlexVertex bootstrap failed, using in-memory mode (demo incomplete without FlexVertex): "
+                            + ex.getMessage());
             return new NoOpDecisionStore();
         }
     }

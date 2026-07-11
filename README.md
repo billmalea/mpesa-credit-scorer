@@ -1,6 +1,6 @@
 # M-Pesa Credit Scorer
 
-**TTACS Management Consulting** — deterministic M-Pesa statement underwriting with optional [FlexVertex](https://docs.flexvertex.com/) audit provenance.
+**TTACS Management Consulting** — deterministic M-Pesa statement underwriting with a core [FlexVertex](https://docs.flexvertex.com/) audit graph for demos.
 
 License: [GNU Affero General Public License v3.0](LICENSE) (AGPL-3.0).
 
@@ -14,9 +14,9 @@ A Java 21 credit scorecard that:
 2. **Extracts** cash-flow features (verified inflow, tenure, volatility, salary/business patterns, round-tripping)
 3. **Evaluates** eligibility rules from `policy.yml` (optionally overlaid from a lender policy PDF)
 4. **Scores** 0–100 and recommends a max loan
-5. **Optionally** persists Applicant → Decision → Finding → Rule → PolicyChunk in FlexVertex for reconstructable audit
+5. **Persists** Applicant → Decision → Finding → Rule → PolicyChunk in FlexVertex for reconstructable audit
 
-Scoring is **local and deterministic**. FlexVertex is **not** required for APPROVE / REFER / DECLINE.
+Scoring is **local and deterministic**. FlexVertex does not change APPROVE / REFER / DECLINE math — it is the **audit / provenance pillar** of every demo. Demos always expect FlexVertex Iron running with the audit graph enabled.
 
 ---
 
@@ -32,7 +32,7 @@ Scoring is **local and deterministic**. FlexVertex is **not** required for APPRO
                                                           ┌───────────────▼───────────────┐
                                                           │ CreditDecision (JSON / UI)    │
                                                           └───────────────┬───────────────┘
-                                                                          │ optional
+                                                                          │ core demo path
                                                           ┌───────────────▼───────────────┐
                                                           │ FlexVertexDecisionStore       │
                                                           │ TTACS / Scorer / MpesaCredit  │
@@ -47,7 +47,7 @@ Scoring is **local and deterministic**. FlexVertex is **not** required for APPRO
 | Features | `FeatureExtractor` | Monthly verified inflow, surplus, CV, patterns, fraud signals |
 | Rules | `RuleEvaluator` | Eligibility with HARD_FAIL → DECLINED, SOFT_REFER → REFERRED |
 | Score | `Scorecard` | Weighted points, caps by verdict, max loan vs requested |
-| Audit | `DecisionStore` | No-op by default; FlexVertex when `flexvertex.enabled: true` |
+| Audit | `DecisionStore` | FlexVertex audit graph (demo default); NoOp only as ops fallback |
 
 ### Verdicts
 
@@ -71,9 +71,9 @@ Scoring is **local and deterministic**. FlexVertex is **not** required for APPRO
 | `TRANSACTION_DEPTH` | SOFT | Enough transactions for assessment |
 | `INFLOW_VOLATILITY` | SOFT | CV ≤ max, or salary/business pattern waiver |
 
-### FlexVertex audit graph (optional)
+### FlexVertex audit graph (core)
 
-When enabled and Iron Edition is reachable on `localhost:10000`:
+Demos always run with Iron Edition reachable on `localhost:10000` and `flexvertex.enabled: true`:
 
 ```text
 Applicant --CreditEvaluation--> CreditApplication
@@ -82,7 +82,7 @@ Finding --appliesTo--> CreditApplication
 Finding --basedOn--> Rule --originatedFrom--> EmbeddingChunk (policy PDF)
 ```
 
-APIs: `GET /api/v1/applications/{id}/reconstruct`, `GET /api/v1/report`, CLI `report`.
+APIs: `GET /api/v1/applications/{id}/reconstruct`, `GET /api/v1/report`, CLI `report`. Inspect schema `TTACS/Scorer/MpesaCredit` in Cartographer after evaluate.
 
 ---
 
@@ -109,25 +109,33 @@ mpesa-credit-scorer/
 
 - **JDK 21+**
 - **Maven 3.9+**
-- Optional: Docker + FlexVertex Iron Edition (for audit graph)
-- Optional: `cloudflared` for public demos
+- **Docker + FlexVertex Iron Edition** — required for a full demo (audit graph)
+- Optional: `cloudflared` for public scorer tunnels (FlexVertex stays local)
 
 ---
 
 ## Quick start
 
+Full demo path: **start FlexVertex → sync libs → enable → serve**.
+
 ```bash
 git clone https://github.com/billmalea/mpesa-credit-scorer.git
 cd mpesa-credit-scorer
 
-# Config (no secrets in git — edit locally)
+# 1. Config (no secrets in git — edit locally)
 cp policy.example.yml policy.yml
-# Edit flexvertex passwords only if enabling FlexVertex
+# Set flexvertex.adminPassword / underwriterPassword to your local Iron Edition passwords
+# (demos require flexvertex.enabled: true — already the default in policy.example.yml)
 
-mvn test
+# 2. Start FlexVertex Iron + sync client JARs into lib/ (gitignored)
+./scripts/setup-flexvertex.sh
+# Or, if Iron is already up: ./scripts/sync-flexvertex-libs.sh
+
+# 3. Score + serve with FlexVertex audit
+mvn -Pflexvertex test
 ./scripts/run.sh evaluate --file samples/amina-strong-inflow.csv
 ./scripts/run.sh serve
-# UI: http://localhost:8091
+# UI: http://localhost:8091  ·  Cartographer: http://localhost:8080
 ```
 
 ### CLI
@@ -138,7 +146,7 @@ mvn test
 
 ./scripts/run.sh extract --file statement.pdf --password '...' --out samples/private
 ./scripts/run.sh policy
-./scripts/run.sh report    # needs FlexVertex persistence
+./scripts/run.sh report    # portfolio counts from FlexVertex audit graph
 ```
 
 ### HTTP API
@@ -149,8 +157,8 @@ mvn test
 | GET | `/` | Optional Basic | UI |
 | POST | `/api/v1/parse` | Optional Basic | Statement preview |
 | POST | `/api/v1/evaluate` | Optional Basic | Full decision |
-| GET | `/api/v1/applications/{id}/reconstruct` | Optional Basic | Audit trail |
-| GET | `/api/v1/report` | Optional Basic | Portfolio counts |
+| GET | `/api/v1/applications/{id}/reconstruct` | Optional Basic | Audit trail (FlexVertex) |
+| GET | `/api/v1/report` | Optional Basic | Portfolio counts (FlexVertex) |
 
 Multipart evaluate fields: `statement`, `statementPassword`, `applicantName`, `msisdn`, `requestedAmountKes`, `projectedMonthlyRepaymentKes`, `activeLoanCount`, `applicationId`.
 
@@ -164,20 +172,21 @@ export SCORER_BASIC_AUTH='demo:choose-a-strong-password'
 
 ---
 
-## FlexVertex (optional)
+## FlexVertex (core for demos)
 
-1. Start Iron Edition (see your FlexVertex install docs; typically `localhost:8080` UI, `localhost:10000` client API).
+1. Start Iron Edition (typically `localhost:8080` UI, `localhost:10000` client API).
 2. From this repo:
 
 ```bash
-./scripts/sync-flexvertex-libs.sh   # copies client JARs into lib/ (gitignored)
 ./scripts/setup-flexvertex.sh
+# or separately:
+./scripts/sync-flexvertex-libs.sh   # copies client JARs into lib/ (gitignored)
 ```
 
-3. In `policy.yml` set `flexvertex.enabled: true` and real admin/underwriter passwords **locally only**.
-4. `./scripts/run.sh serve` then evaluate; inspect schema `TTACS/Scorer/MpesaCredit` in Cartographer.
+3. In `policy.yml` keep `flexvertex.enabled: true` and set real admin/underwriter passwords **locally only** (must match your Iron Edition install).
+4. `./scripts/run.sh serve` then evaluate; reconstruct via the UI / API and inspect Cartographer.
 
-If FlexVertex is down, the scorer falls back to in-memory `NoOpDecisionStore` and still returns decisions.
+**Ops resilience:** if FlexVertex is down or passwords are wrong, the scorer falls back to in-memory `NoOpDecisionStore` and still returns score decisions. That path is for resilience only — **do not run demos that way**; reconstruct, report, and Cartographer provenance will be missing.
 
 ---
 
@@ -215,7 +224,7 @@ See [`policy.example.yml`](policy.example.yml):
 - **eligibility** — thresholds for rules  
 - **scoring.weights** — scorecard mix + round-trip penalty  
 - **policy.pdfPath** — synthetic guidelines PDF for threshold overlay / graph chunks  
-- **flexvertex** — optional audit connection  
+- **flexvertex** — audit graph connection (enabled by default for demos; set local Iron passwords)  
 - **server.port** — HTTP listen port (default `8091`)
 
 ---
@@ -223,7 +232,7 @@ See [`policy.example.yml`](policy.example.yml):
 ## Development
 
 ```bash
-mvn test                 # core tests (no FlexVertex required)
+mvn test                 # unit tests (NoOp store; CI without Iron)
 mvn -Pflexvertex test    # requires lib/ JARs from sync-flexvertex-libs.sh
 mvn -Pflexvertex package
 ```

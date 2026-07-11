@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Sync FlexVertex Iron client JARs into lib/ (required for a full demo with audit graph).
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
