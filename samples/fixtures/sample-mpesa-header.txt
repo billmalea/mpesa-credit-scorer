@@ -1,0 +1,5 @@
+M-PESA STATEMENT
+Customer Name: AMINA OTIENO DEMO
+Mobile Number: 254700000001
+Email Address: amina.demo@example.com
+Statement Period: 01 Jan 2026 - 30 Jun 2026

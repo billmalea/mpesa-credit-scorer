@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>M-Pesa Credit Scorer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header class="header">
+    <div class="container header-inner">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">TT</div>
+        <div>
+          <p class="eyebrow">Statement underwriting</p>
+          <h1>M-Pesa Credit Scorer</h1>
+        </div>
+      </div>
+      <div class="header-meta">
+        <span class="pill">Deterministic rules</span>
+        <a href="/health" target="_blank" rel="noreferrer">API</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container layout">
+    <section class="panel form-panel">
+      <div class="panel-head">
+        <h2>Evaluate statement</h2>
+        <p>Upload a Safaricom PDF or CSV export. Applicant identity is read from the file.</p>
+      </div>
+
+      <form id="evaluate-form" class="form">
+        <div id="identity-banner" class="identity-banner hidden"></div>
+
+        <div class="field-grid">
+          <label class="field">
+            <span>Applicant name <small class="hint-inline">from statement</small></span>
+            <input name="applicantName" placeholder="Auto-filled" autocomplete="name" readonly />
+          </label>
+          <label class="field">
+            <span>Phone <small class="hint-inline">from statement</small></span>
+            <input name="msisdn" placeholder="Auto-filled" inputmode="numeric" readonly />
+          </label>
+          <label class="field">
+            <span>Requested loan (KES)</span>
+            <input name="requestedAmountKes" type="number" min="1000" step="500" required value="75000" />
+            <small class="field-note">Caps recommended max loan when approved</small>
+          </label>
+          <label class="field">
+            <span>Monthly repayment (KES)</span>
+            <input name="projectedMonthlyRepaymentKes" type="number" min="0" step="500" value="12500" />
+            <small class="field-note">Used for affordability check</small>
+          </label>
+          <label class="field">
+            <span>Active loans declared</span>
+            <input name="activeLoanCount" type="number" min="0" max="20" value="0" />
+          </label>
+        </div>
+
+        <div class="mode-toggle" role="radiogroup" aria-label="Statement input mode">
+          <label class="mode-option">
+            <input type="radio" name="mode" value="file" checked />
+            <span>Upload file</span>
+          </label>
+          <label class="mode-option">
+            <input type="radio" name="mode" value="sample" />
+            <span>Try sample</span>
+          </label>
+        </div>
+
+        <div id="file-panel" class="upload-zone">
+          <input id="statement-file" type="file" accept=".pdf,.csv,text/csv,application/pdf" hidden />
+          <button type="button" class="upload-trigger" id="pick-file">
+            <span class="upload-icon" aria-hidden="true">+</span>
+            <span class="upload-title">Drop statement or browse</span>
+            <span class="upload-hint">PDF with password, or CSV</span>
+          </button>
+          <p id="selected-file" class="file-name">No file selected</p>
+          <label class="field password-field">
+            <span>PDF password</span>
+            <input name="statementPassword" type="password" placeholder="If the PDF is locked" autocomplete="off" />
+          </label>
+        </div>
+
+        <div id="sample-panel" class="sample-panel hidden">
+          <div class="sample-cards">
+            <button type="button" class="sample-card" data-sample="amina-strong-inflow.csv">
+              <strong>Strong inflow</strong>
+              <span>Payroll pattern · should approve</span>
+            </button>
+            <button type="button" class="sample-card" data-sample="collins-weak-inflow.csv">
+              <strong>Weak inflow</strong>
+              <span>Low verified income · should decline</span>
+            </button>
+          </div>
+          <p id="sample-label" class="file-name">Pick a sample above</p>
+        </div>
+
+        <button type="submit" class="submit-btn" id="submit-btn">
+          <span class="submit-text">Run credit score</span>
+          <span class="submit-spinner hidden" aria-hidden="true"></span>
+        </button>
+        <p id="status" class="status" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <section class="panel results-panel">
+      <div class="panel-head">
+        <h2>Decision</h2>
+        <p>Score, affordability, and rule outcomes from the statement.</p>
+      </div>
+
+      <div id="results-empty" class="empty-state">
+        <p class="empty-title">No decision yet</p>
+        <p>Upload a statement or try a sample to see eligibility and findings.</p>
+      </div>
+
+      <div id="results" class="results hidden">
+        <div class="score-hero">
+          <div class="score-ring" id="score-ring">
+            <svg viewBox="0 0 120 120" aria-hidden="true">
+              <circle class="ring-bg" cx="60" cy="60" r="52" />
+              <circle class="ring-fill" id="ring-fill" cx="60" cy="60" r="52" />
+            </svg>
+            <div class="score-value">
+              <span id="credit-score">0</span>
+              <small>score</small>
+            </div>
+          </div>
+          <div class="score-meta">
+            <span id="verdict-badge" class="verdict-badge">—</span>
+            <p id="verdict-reason" class="verdict-reason"></p>
+          </div>
+        </div>
+
+        <div class="metric-grid">
+          <article class="metric">
+            <span class="metric-label">Max loan</span>
+            <strong id="max-loan">KES 0</strong>
+          </article>
+          <article class="metric">
+            <span class="metric-label">Repayment capacity</span>
+            <strong id="repayment-cap">KES 0</strong>
+          </article>
+          <article class="metric">
+            <span class="metric-label">Verified inflow / mo</span>
+            <strong id="verified-inflow">KES 0</strong>
+          </article>
+          <article class="metric">
+            <span class="metric-label">Net surplus / mo</span>
+            <strong id="net-surplus">KES 0</strong>
+          </article>
+          <article class="metric">
+            <span class="metric-label">Tenure</span>
+            <strong id="tenure">0 mo</strong>
+          </article>
+          <article class="metric">
+            <span class="metric-label">Requested</span>
+            <strong id="requested-amount">KES 0</strong>
+          </article>
+        </div>
+
+        <div class="findings-block">
+          <h3>Rule findings</h3>
+          <ul id="findings" class="findings"></ul>
+        </div>
+
+        <div id="audit-block" class="audit-block hidden">
+          <div class="audit-header">
+            <h3>FlexVertex audit trail</h3>
+            <button type="button" id="reconstruct-btn" class="btn-secondary">Reconstruct decision</button>
+          </div>
+          <p id="audit-meta" class="audit-meta"></p>
+          <ol id="reconstruct-steps" class="reconstruct-steps"></ol>
+        </div>
+
+        <details class="raw-block">
+          <summary>Raw JSON response</summary>
+          <pre id="raw-json"></pre>
+        </details>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer container">
+    <p>TTACS credit scorecard · optional FlexVertex audit trail</p>
+  </footer>
+
+  <script src="/app.js"></script>
+</body>
+</html>

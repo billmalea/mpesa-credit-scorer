@@ -1,0 +1,39 @@
+product:
+  name: Unsecured Mobile Money Credit
+  maxLoanKes: 150000
+  loanToInflowRatio: 1.5
+
+eligibility:
+  minMonthlyNetInflowKes: 50000
+  minAccountTenureMonths: 6
+  maxActiveLoans: 2
+  maxRepaymentToInflowRatio: 0.40
+  maxInflowVolatilityCv: 0.75
+  minTransactionCount: 8
+
+scoring:
+  weights:
+    tenure: 20
+    inflow: 30
+    stability: 20
+    activity: 15
+    salaryPattern: 10
+  roundTrippingPenalty: 25
+
+policy:
+  pdfPath: docs/FlexVertex_Mobile_Money_Credit_Policy_Guidelines.pdf
+  materializeOnStart: true
+
+flexvertex:
+  enabled: false
+  host: localhost
+  port: 10000
+  adminPath: /System/System/System/Admin
+  adminPassword: REPLACE_ME
+  domain: TTACS
+  nexus: Scorer
+  schema: MpesaCredit
+  underwriterPassword: REPLACE_ME
+
+server:
+  port: 8091

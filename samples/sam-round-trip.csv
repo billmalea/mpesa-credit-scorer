@@ -1,0 +1,9 @@
+Receipt No,Completion Time,Details,Transaction Status,Paid in,Withdrawn,Balance
+R001,2026-01-10 10:00:00,Customer Transfer of Funds from AGENT MARY 254733300001,Completed,50000.00,0.00,50000.00
+R002,2026-01-10 18:00:00,Customer Transfer to AGENT MARY 254733300001,Completed,0.00,50000.00,0.00
+R003,2026-02-12 11:00:00,Customer Transfer of Funds from AGENT MARY 254733300001,Completed,60000.00,0.00,60000.00
+R004,2026-02-12 19:00:00,Customer Transfer to AGENT MARY 254733300001,Completed,0.00,60000.00,0.00
+R005,2026-03-08 09:00:00,Customer Transfer of Funds from AGENT MARY 254733300001,Completed,45000.00,0.00,45000.00
+R006,2026-03-08 20:00:00,Customer Transfer to AGENT MARY 254733300001,Completed,0.00,45000.00,0.00
+R007,2026-04-15 10:30:00,Customer Transfer of Funds from SIDE CLIENT 254744400002,Completed,12000.00,0.00,12000.00
+R008,2026-05-20 12:00:00,Pay Bill to FULIZA,Completed,0.00,5000.00,7000.00

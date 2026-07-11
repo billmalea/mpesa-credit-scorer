@@ -1,0 +1,35 @@
+# Build
+target/
+*.class
+*.jar
+!**/src/**/*.jar
+
+# FlexVertex client jars (sync locally from Iron Edition — do not commit)
+lib/
+
+# IDE / OS
+.idea/
+*.iml
+.vscode/
+.DS_Store
+*.swp
+
+# Secrets & local demo auth (never commit)
+.env
+.env.*
+!.env.example
+policy.local.yml
+.demo-credentials
+DEMO_AUTH.txt
+*.pem
+*.key
+credentials*
+
+# Real customer M-Pesa statements and derived extracts (PII)
+samples/MPESA_Statement_*.pdf
+samples/extracted/
+samples/private/
+
+# Runtime / tunnel logs
+*.log
+/tmp/
