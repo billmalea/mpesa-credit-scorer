@@ -1,6 +1,6 @@
 # M-Pesa Credit Scorer
 
-**TTACS Management Consulting** — deterministic M-Pesa statement underwriting with a core [FlexVertex](https://docs.flexvertex.com/) audit graph for demos.
+**TTACS Management Consulting** — deterministic M-Pesa statement underwriting with a core [FlexVertex](https://docs.flexvertex.com/) audit graph.
 
 License: [GNU Affero General Public License v3.0](LICENSE) (AGPL-3.0).
 
@@ -16,7 +16,7 @@ A Java 21 credit scorecard that:
 4. **Scores** 0–100 and recommends a max loan
 5. **Persists** Applicant → Decision → Finding → Rule → PolicyChunk in FlexVertex for reconstructable audit
 
-Scoring is **local and deterministic**. FlexVertex does not change APPROVE / REFER / DECLINE math — it is the **audit / provenance pillar** of every demo. Demos always expect FlexVertex Iron running with the audit graph enabled.
+Scoring is **local and deterministic**. FlexVertex does not change APPROVE / REFER / DECLINE math — it is the **audit / provenance pillar** of every run. Iron Edition must be up; demos do not treat the audit graph as optional.
 
 ---
 
@@ -32,7 +32,7 @@ Scoring is **local and deterministic**. FlexVertex does not change APPROVE / REF
                                                           ┌───────────────▼───────────────┐
                                                           │ CreditDecision (JSON / UI)    │
                                                           └───────────────┬───────────────┘
-                                                                          │ core demo path
+                                                                          │ required audit path
                                                           ┌───────────────▼───────────────┐
                                                           │ FlexVertexDecisionStore       │
                                                           │ TTACS / Scorer / MpesaCredit  │
@@ -47,7 +47,7 @@ Scoring is **local and deterministic**. FlexVertex does not change APPROVE / REF
 | Features | `FeatureExtractor` | Monthly verified inflow, surplus, CV, patterns, fraud signals |
 | Rules | `RuleEvaluator` | Eligibility with HARD_FAIL → DECLINED, SOFT_REFER → REFERRED |
 | Score | `Scorecard` | Weighted points, caps by verdict, max loan vs requested |
-| Audit | `DecisionStore` | FlexVertex audit graph (demo default); NoOp only as ops fallback |
+| Audit | `DecisionStore` | FlexVertex audit graph (required); NoOp only as ops resilience fallback |
 
 ### Verdicts
 
@@ -71,9 +71,9 @@ Scoring is **local and deterministic**. FlexVertex does not change APPROVE / REF
 | `TRANSACTION_DEPTH` | SOFT | Enough transactions for assessment |
 | `INFLOW_VOLATILITY` | SOFT | CV ≤ max, or salary/business pattern waiver |
 
-### FlexVertex audit graph (core)
+### FlexVertex audit graph (required)
 
-Demos always run with Iron Edition reachable on `localhost:10000` and `flexvertex.enabled: true`:
+Iron Edition must be running with the client API on `localhost:10000`. Demo `policy.yml` must point at that install — `flexvertex.enabled: true` is the only supported demo mode (turning it off is unsupported for demos):
 
 ```text
 Applicant --CreditEvaluation--> CreditApplication
@@ -109,14 +109,14 @@ mpesa-credit-scorer/
 
 - **JDK 21+**
 - **Maven 3.9+**
-- **Docker + FlexVertex Iron Edition** — required for a full demo (audit graph)
+- **Docker + FlexVertex Iron Edition** — required (audit graph); demos do not run without it
 - Optional: `cloudflared` for public scorer tunnels (FlexVertex stays local)
 
 ---
 
 ## Quick start
 
-Full demo path: **start FlexVertex → sync libs → enable → serve**.
+Full demo path: **start FlexVertex → sync libs → set Iron passwords → serve**.
 
 ```bash
 git clone https://github.com/billmalea/mpesa-credit-scorer.git
@@ -125,13 +125,13 @@ cd mpesa-credit-scorer
 # 1. Config (no secrets in git — edit locally)
 cp policy.example.yml policy.yml
 # Set flexvertex.adminPassword / underwriterPassword to your local Iron Edition passwords
-# (demos require flexvertex.enabled: true — already the default in policy.example.yml)
+# Keep flexvertex.enabled: true (only supported demo mode; already the default in policy.example.yml)
 
 # 2. Start FlexVertex Iron + sync client JARs into lib/ (gitignored)
 ./scripts/setup-flexvertex.sh
 # Or, if Iron is already up: ./scripts/sync-flexvertex-libs.sh
 
-# 3. Score + serve with FlexVertex audit
+# 3. Score + serve (requires Iron + FlexVertex audit)
 mvn -Pflexvertex test
 ./scripts/run.sh evaluate --file samples/amina-strong-inflow.csv
 ./scripts/run.sh serve
@@ -172,9 +172,9 @@ export SCORER_BASIC_AUTH='demo:choose-a-strong-password'
 
 ---
 
-## FlexVertex (core for demos)
+## FlexVertex (required)
 
-1. Start Iron Edition (typically `localhost:8080` UI, `localhost:10000` client API).
+1. Start Iron Edition (`localhost:8080` UI, `localhost:10000` client API) — required before evaluate/serve demos.
 2. From this repo:
 
 ```bash
@@ -183,10 +183,10 @@ export SCORER_BASIC_AUTH='demo:choose-a-strong-password'
 ./scripts/sync-flexvertex-libs.sh   # copies client JARs into lib/ (gitignored)
 ```
 
-3. In `policy.yml` keep `flexvertex.enabled: true` and set real admin/underwriter passwords **locally only** (must match your Iron Edition install).
+3. In `policy.yml` keep `flexvertex.enabled: true` (only supported demo mode; disabling is unsupported) and set real admin/underwriter passwords **locally only** (must match your Iron Edition install).
 4. `./scripts/run.sh serve` then evaluate; reconstruct via the UI / API and inspect Cartographer.
 
-**Ops resilience:** if FlexVertex is down or passwords are wrong, the scorer falls back to in-memory `NoOpDecisionStore` and still returns score decisions. That path is for resilience only — **do not run demos that way**; reconstruct, report, and Cartographer provenance will be missing.
+**Ops resilience:** if FlexVertex is down or passwords are wrong, the scorer falls back to in-memory `NoOpDecisionStore` and still returns score decisions. That path is for resilience only — **not a supported demo mode**; reconstruct, report, and Cartographer provenance will be missing.
 
 ---
 
@@ -204,15 +204,6 @@ Synthetic CSVs (safe to commit):
 
 **Do not commit** real customer PDFs or `samples/extracted/` dumps. Those paths are gitignored. Private PDF regression tests skip unless the file exists and `MPESA_PDF_PASSWORD` is set.
 
----
-
-## Security notes
-
-- Never commit `.demo-credentials`, `DEMO_AUTH.txt`, `.env`, or real FlexVertex passwords.
-- `policy.yml` in git uses `REPLACE_ME` placeholders; use `policy.local.yml` (gitignored) or local edits for secrets.
-- Public tunnels must use `SCORER_BASIC_AUTH`; the tunnel script refuses unprotected UIs.
-- FlexVertex ports `8080` / `10000` must **not** be tunneled for demos — only the scorer (`8091`).
-- Upload size capped; API 500s scrub internal exception detail.
 
 ---
 
@@ -224,7 +215,7 @@ See [`policy.example.yml`](policy.example.yml):
 - **eligibility** — thresholds for rules  
 - **scoring.weights** — scorecard mix + round-trip penalty  
 - **policy.pdfPath** — synthetic guidelines PDF for threshold overlay / graph chunks  
-- **flexvertex** — audit graph connection (enabled by default for demos; set local Iron passwords)  
+- **flexvertex** — required audit graph connection (`enabled: true` only supported demo mode; set local Iron passwords)   
 - **server.port** — HTTP listen port (default `8091`)
 
 ---
