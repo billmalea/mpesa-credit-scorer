@@ -81,8 +81,26 @@ public final class RuleEvaluator {
                     "No verified inflow for repayment capacity check"
             );
         }
-        BigDecimal ratio = BigDecimal.valueOf(request.projectedMonthlyRepaymentKes())
-                .divide(inflow, 4, RoundingMode.HALF_UP);
+
+        int projected = request.projectedMonthlyRepaymentKes();
+        // When the applicant does not declare a repayment, size against policy capacity
+        // (statement-derived offer will fit within this envelope).
+        if (projected <= 0) {
+            int capacity = (int) Math.floor(inflow.doubleValue() * policy.eligibility.maxRepaymentToInflowRatio);
+            return new RuleFinding(
+                    "REPAYMENT_CAPACITY",
+                    "Repayment-to-inflow capacity",
+                    RuleSeverity.HARD_FAIL,
+                    capacity > 0,
+                    "KES " + capacity + " capacity",
+                    "<= " + (int) (policy.eligibility.maxRepaymentToInflowRatio * 100) + "% of inflow",
+                    capacity > 0
+                            ? "Affordability sized from statement capacity (no declared repayment)"
+                            : "No repayment capacity from verified inflow"
+            );
+        }
+
+        BigDecimal ratio = BigDecimal.valueOf(projected).divide(inflow, 4, RoundingMode.HALF_UP);
         boolean passed = ratio.doubleValue() <= policy.eligibility.maxRepaymentToInflowRatio;
         return new RuleFinding(
                 "REPAYMENT_CAPACITY",

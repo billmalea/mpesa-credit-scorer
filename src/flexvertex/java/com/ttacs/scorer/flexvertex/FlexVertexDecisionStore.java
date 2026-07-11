@@ -139,6 +139,9 @@ public final class FlexVertexDecisionStore implements DecisionStore {
                 evaluation.setProperty("EvidenceSource", "Parsed M-Pesa statement");
                 evaluation.setProperty("CreditScore", decision.creditScore());
                 evaluation.setProperty("MaxLoanKES", decision.maxLoanKes());
+                evaluation.setProperty("RecommendedTenureMonths", decision.recommendedTenureMonths());
+                evaluation.setProperty("RecommendedMonthlyRepaymentKES", decision.recommendedMonthlyRepaymentKes());
+                evaluation.setProperty("MonthlyRepaymentCapacityKES", decision.monthlyRepaymentCapacityKes());
                 if (evidence != null) {
                     evaluation.setProperty("StatementFormat", evidence.format() != null ? evidence.format().name() : "");
                     evaluation.setProperty("TransactionCount", evidence.transactionCount());
@@ -158,6 +161,9 @@ public final class FlexVertexDecisionStore implements DecisionStore {
                 decisionObject.setProperty("Reason", decision.reason());
                 decisionObject.setProperty("CreditScore", decision.creditScore());
                 decisionObject.setProperty("MaxLoanKES", decision.maxLoanKes());
+                decisionObject.setProperty("RecommendedTenureMonths", decision.recommendedTenureMonths());
+                decisionObject.setProperty("RecommendedMonthlyRepaymentKES", decision.recommendedMonthlyRepaymentKes());
+                decisionObject.setProperty("MonthlyRepaymentCapacityKES", decision.monthlyRepaymentCapacityKes());
                 decisionObject.setProperty("TokensUsed", 0);
                 decisionObject.setProperty("CreatedAt", new FlexDateTime(decision.decidedAt()));
                 decisionObject.connectTo(application, "evaluated");
@@ -391,6 +397,9 @@ public final class FlexVertexDecisionStore implements DecisionStore {
             ensureProperty(conn, "EvidenceSource", FlexType.String);
             ensureProperty(conn, "CreditScore", FlexType.Integer);
             ensureProperty(conn, "MaxLoanKES", FlexType.Integer);
+            ensureProperty(conn, "RecommendedTenureMonths", FlexType.Integer);
+            ensureProperty(conn, "RecommendedMonthlyRepaymentKES", FlexType.Integer);
+            ensureProperty(conn, "MonthlyRepaymentCapacityKES", FlexType.Integer);
             ensureProperty(conn, "StatementFormat", FlexType.String);
             ensureProperty(conn, "TransactionCount", FlexType.Integer);
             ensureProperty(conn, "StatementPeriodStart", FlexType.String);
@@ -422,6 +431,9 @@ public final class FlexVertexDecisionStore implements DecisionStore {
             ensureProperty(cls, "Reason", FlexType.String);
             ensureProperty(cls, "CreditScore", FlexType.Integer);
             ensureProperty(cls, "MaxLoanKES", FlexType.Integer);
+            ensureProperty(cls, "RecommendedTenureMonths", FlexType.Integer);
+            ensureProperty(cls, "RecommendedMonthlyRepaymentKES", FlexType.Integer);
+            ensureProperty(cls, "MonthlyRepaymentCapacityKES", FlexType.Integer);
             ensureProperty(cls, "TokensUsed", FlexType.Integer);
             ensureProperty(cls, "CreatedAt", FlexType.DateTime);
         });

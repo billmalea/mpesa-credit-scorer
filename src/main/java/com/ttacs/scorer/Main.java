@@ -146,8 +146,8 @@ public final class Main {
         String name = "Applicant";
         String msisdn = "";
         String password = null;
-        int requested = 75_000;
-        int repayment = 12_500;
+        int requested = 0;
+        int repayment = 0;
         int activeLoans = 0;
         String appId = "APP-" + UUID.randomUUID().toString().substring(0, 8);
 
@@ -234,8 +234,8 @@ public final class Main {
                   --password <value>      PDF unlock password
                   --name <applicant>      Applicant name
                   --msisdn <number>       Phone hint
-                  --requested <kes>       Requested loan amount
-                  --repayment <kes>       Projected monthly repayment
+                  --requested <kes>       Optional requested loan amount
+                  --repayment <kes>       Optional declared monthly repayment
                   --active-loans <n>      Declared active loans
                   --app-id <id>           Application id
                 """);

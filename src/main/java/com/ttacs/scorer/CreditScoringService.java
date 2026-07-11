@@ -63,10 +63,17 @@ public final class CreditScoringService {
 
         int creditScore = scorecard.computeScore(policy, features, verdict);
         int repaymentCapacity = scorecard.monthlyRepaymentCapacity(policy, features);
-        int maxLoan = scorecard.maxLoan(policy, features, creditScore, resolved.requestedAmountKes(), verdict);
+        int maxLoan = scorecard.maxLoan(policy, features, creditScore, verdict);
+        int recommendedTenure = scorecard.recommendTenureMonths(maxLoan, repaymentCapacity);
+        int recommendedMonthly = scorecard.monthlyInstallment(maxLoan, recommendedTenure);
         boolean eligible = verdict != Verdict.DECLINED;
 
-        String reason = buildReason(applicantName, verdict, findings, maxLoan);
+        if (resolved.requestedAmountKes() > 0 && maxLoan > 0 && resolved.requestedAmountKes() > maxLoan) {
+            warnings.add("Requested KES " + resolved.requestedAmountKes()
+                    + " exceeds statement-derived max KES " + maxLoan);
+        }
+
+        String reason = buildReason(applicantName, verdict, findings, maxLoan, recommendedTenure, recommendedMonthly);
 
         CreditDecision decision = new CreditDecision(
                 resolved.applicationId(),
@@ -76,6 +83,8 @@ public final class CreditScoringService {
                 eligible,
                 creditScore,
                 maxLoan,
+                recommendedTenure,
+                recommendedMonthly,
                 repaymentCapacity,
                 resolved.requestedAmountKes(),
                 reason,
@@ -153,7 +162,13 @@ public final class CreditScoringService {
         return value != null && !value.isBlank();
     }
 
-    private String buildReason(String applicantName, Verdict verdict, List<RuleFinding> findings, int maxLoan) {
+    private String buildReason(
+            String applicantName,
+            Verdict verdict,
+            List<RuleFinding> findings,
+            int maxLoan,
+            int tenureMonths,
+            int monthlyRepayment) {
         String failed = findings.stream()
                 .filter(f -> !f.passed())
                 .map(RuleFinding::code)
@@ -161,8 +176,10 @@ public final class CreditScoringService {
                 .orElse("none");
 
         return switch (verdict) {
-            case APPROVED -> applicantName + " approved. Recommended max loan KES " + maxLoan + ".";
-            case REFERRED -> applicantName + " referred for manual review. Flags: " + failed + ".";
+            case APPROVED -> applicantName + " approved. Offer KES " + maxLoan
+                    + " over " + tenureMonths + " mo (~KES " + monthlyRepayment + "/mo).";
+            case REFERRED -> applicantName + " referred for manual review. Provisional offer KES " + maxLoan
+                    + " over " + tenureMonths + " mo. Flags: " + failed + ".";
             case DECLINED -> applicantName + " declined. Failed rules: " + failed + ".";
         };
     }

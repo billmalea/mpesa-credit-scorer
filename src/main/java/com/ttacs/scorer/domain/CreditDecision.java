@@ -1,6 +1,5 @@
 package com.ttacs.scorer.domain;
 
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 
@@ -12,6 +11,8 @@ public record CreditDecision(
         boolean eligible,
         int creditScore,
         int maxLoanKes,
+        int recommendedTenureMonths,
+        int recommendedMonthlyRepaymentKes,
         int monthlyRepaymentCapacityKes,
         int requestedAmountKes,
         String reason,

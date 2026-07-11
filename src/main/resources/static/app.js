@@ -23,6 +23,7 @@ const auditBlock = document.getElementById('audit-block');
 const auditMeta = document.getElementById('audit-meta');
 const reconstructBtn = document.getElementById('reconstruct-btn');
 const reconstructSteps = document.getElementById('reconstruct-steps');
+const offerWarning = document.getElementById('offer-warning');
 
 let selectedSample = null;
 let lastApplicationId = null;
@@ -207,10 +208,21 @@ function renderDecision(data) {
 
   document.getElementById('max-loan').textContent = kes(data.maxLoanKes);
   document.getElementById('repayment-cap').textContent = kes(data.monthlyRepaymentCapacityKes);
+  document.getElementById('recommended-repayment').textContent =
+    `${kes(data.recommendedMonthlyRepaymentKes)} / mo`;
+  document.getElementById('recommended-tenure').textContent =
+    `${data.recommendedTenureMonths ?? 0} mo`;
   document.getElementById('verified-inflow').textContent = kes(data.features?.monthlyVerifiedInflowKes);
   document.getElementById('net-surplus').textContent = kes(data.features?.monthlyNetSurplusKes);
-  document.getElementById('tenure').textContent = `${data.features?.tenureMonths ?? 0} mo`;
   document.getElementById('requested-amount').textContent = kes(data.requestedAmountKes);
+
+  const exceedsOffer = data.eligible
+    && Number(data.requestedAmountKes) > Number(data.maxLoanKes)
+    && Number(data.maxLoanKes) > 0;
+  offerWarning.textContent = exceedsOffer
+    ? `Requested ${kes(data.requestedAmountKes)} exceeds the statement-derived offer of ${kes(data.maxLoanKes)}.`
+    : '';
+  offerWarning.classList.toggle('hidden', !exceedsOffer);
 
   renderFindings(data.findings);
   rawJson.textContent = JSON.stringify(data, null, 2);
@@ -265,8 +277,8 @@ async function buildFormData() {
   const body = new FormData();
   body.append('applicantName', form.applicantName.value || '');
   body.append('msisdn', form.msisdn.value || '');
-  body.append('requestedAmountKes', form.requestedAmountKes.value);
-  body.append('projectedMonthlyRepaymentKes', form.projectedMonthlyRepaymentKes.value);
+  body.append('requestedAmountKes', form.requestedAmountKes.value || '0');
+  body.append('projectedMonthlyRepaymentKes', form.projectedMonthlyRepaymentKes.value || '0');
   body.append('activeLoanCount', form.activeLoanCount.value);
 
   if (currentMode() === 'sample') {

@@ -150,8 +150,8 @@ public final class EvaluateHttpServer {
                     form.field("applicationId", "APP-" + UUID.randomUUID().toString().substring(0, 8)),
                     form.field("applicantName", ""),
                     form.field("msisdn", ""),
-                    form.intField("requestedAmountKes", 75_000),
-                    form.intField("projectedMonthlyRepaymentKes", 12_500),
+                    form.intField("requestedAmountKes", 0),
+                    form.intField("projectedMonthlyRepaymentKes", 0),
                     form.intField("activeLoanCount", 0),
                     fileBytes,
                     form.field("statementPassword", null)

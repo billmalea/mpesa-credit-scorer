@@ -46,14 +46,14 @@
             <input name="msisdn" placeholder="Auto-filled" inputmode="numeric" readonly />
           </label>
           <label class="field">
-            <span>Requested loan (KES)</span>
-            <input name="requestedAmountKes" type="number" min="1000" step="500" required value="75000" />
-            <small class="field-note">Caps recommended max loan when approved</small>
+            <span>Requested loan (KES) <small class="hint-inline">optional</small></span>
+            <input name="requestedAmountKes" type="number" min="0" step="500" placeholder="Optional" />
+            <small class="field-note">For comparison only; the offer comes from the statement.</small>
           </label>
           <label class="field">
-            <span>Monthly repayment (KES)</span>
-            <input name="projectedMonthlyRepaymentKes" type="number" min="0" step="500" value="12500" />
-            <small class="field-note">Used for affordability check</small>
+            <span>Declared monthly repayment (KES) <small class="hint-inline">optional</small></span>
+            <input name="projectedMonthlyRepaymentKes" type="number" min="0" step="500" placeholder="Optional" />
+            <small class="field-note">When omitted, affordability is sized from statement capacity.</small>
           </label>
           <label class="field">
             <span>Active loans declared</span>
@@ -139,12 +139,20 @@
 
         <div class="metric-grid">
           <article class="metric">
-            <span class="metric-label">Max loan</span>
+            <span class="metric-label">Statement max loan</span>
             <strong id="max-loan">KES 0</strong>
           </article>
           <article class="metric">
             <span class="metric-label">Repayment capacity</span>
             <strong id="repayment-cap">KES 0</strong>
+          </article>
+          <article class="metric">
+            <span class="metric-label">Recommended repayment</span>
+            <strong id="recommended-repayment">KES 0 / mo</strong>
+          </article>
+          <article class="metric">
+            <span class="metric-label">Recommended tenure</span>
+            <strong id="recommended-tenure">0 mo</strong>
           </article>
           <article class="metric">
             <span class="metric-label">Verified inflow / mo</span>
@@ -155,14 +163,11 @@
             <strong id="net-surplus">KES 0</strong>
           </article>
           <article class="metric">
-            <span class="metric-label">Tenure</span>
-            <strong id="tenure">0 mo</strong>
-          </article>
-          <article class="metric">
             <span class="metric-label">Requested</span>
             <strong id="requested-amount">KES 0</strong>
           </article>
         </div>
+        <p id="offer-warning" class="offer-warning hidden" role="alert"></p>
 
         <div class="findings-block">
           <h3>Rule findings</h3>

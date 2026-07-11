@@ -33,3 +33,4 @@ samples/private/
 # Runtime / tunnel logs
 *.log
 /tmp/
+.demo-logs/

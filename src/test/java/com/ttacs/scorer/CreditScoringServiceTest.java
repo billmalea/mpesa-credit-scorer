@@ -40,11 +40,27 @@ class CreditScoringServiceTest {
 
     @Test
     void approvesStrongPayrollApplicant() throws Exception {
-        CreditDecision decision = evaluateSample("amina-strong-inflow.csv", 75_000, 12_500, 0);
+        CreditDecision decision = evaluateSample("amina-strong-inflow.csv", 1, 0, 0);
 
         assertEquals(Verdict.APPROVED, decision.verdict());
         assertTrue(decision.features().salaryPattern());
         assertTrue(decision.features().monthlyVerifiedInflowKes().intValue() >= 50_000);
+        int expectedMaxLoan = (int) Math.floor(
+                decision.features().monthlyVerifiedInflowKes().doubleValue()
+                        * service().policy().product.loanToInflowRatio
+                        * decision.creditScore() / 100.0
+        );
+        assertEquals(expectedMaxLoan, decision.maxLoanKes());
+        assertTrue(decision.maxLoanKes() > decision.requestedAmountKes());
+    }
+
+    @Test
+    void recommendedTenureKeepsInstallmentWithinStatementCapacity() throws Exception {
+        CreditDecision decision = evaluateSample("amina-strong-inflow.csv", 0, 0, 0);
+
+        assertEquals(Verdict.APPROVED, decision.verdict());
+        assertTrue(decision.recommendedTenureMonths() > 0);
+        assertTrue(decision.recommendedMonthlyRepaymentKes() <= decision.monthlyRepaymentCapacityKes());
     }
 
     @Test
