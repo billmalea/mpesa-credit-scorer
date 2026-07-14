@@ -1,0 +1,10 @@
+.git
+.env
+.env.*
+!deploy/contabo/.env.example
+policy.local.yml
+target
+*.log
+samples/private
+samples/extracted
+samples/MPESA_Statement_*.pdf

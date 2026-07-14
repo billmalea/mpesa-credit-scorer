@@ -1,0 +1,23 @@
+{
+  "redirects": [
+    {
+      "source": "/mpesa-scorer",
+      "destination": "/mpesa-scorer/",
+      "permanent": false
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/mpesa-scorer/",
+      "destination": "https://scorer.ttacs.co.ke/"
+    },
+    {
+      "source": "/mpesa-scorer/:path*",
+      "destination": "https://scorer.ttacs.co.ke/:path*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}

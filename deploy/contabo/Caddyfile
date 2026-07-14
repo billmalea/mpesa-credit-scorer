@@ -1,0 +1,10 @@
+{
+	email {$CADDY_EMAIL}
+}
+
+# Vercel rewrites /mpesa-scorer/:path* to this host's /:path*.
+# The scorer therefore remains root-mounted and is not aware of the public prefix.
+scorer.ttacs.co.ke {
+	encode zstd gzip
+	reverse_proxy scorer:8091
+}

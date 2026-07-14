@@ -30,6 +30,35 @@ let lastApplicationId = null;
 
 const RING_CIRCUMFERENCE = 327;
 
+/**
+ * Public path prefix for path proxies (e.g. /mpesa-scorer on ttacs.co.ke).
+ * Relative URLs alone break when the page is opened without a trailing slash.
+ */
+const API_BASE = (() => {
+  const explicit = document.documentElement.dataset.apiBase;
+  if (explicit != null && String(explicit).length > 0) {
+    return String(explicit).replace(/\/$/, '');
+  }
+  let path = window.location.pathname || '/';
+  if (path.length > 1 && path.endsWith('/')) {
+    path = path.slice(0, -1);
+  }
+  // Local root demo stays at ''.
+  if (path === '' || path === '/') {
+    return '';
+  }
+  // Strip a trailing file segment (index.html) if present.
+  if (/\.[a-z0-9]+$/i.test(path)) {
+    path = path.replace(/\/[^/]+$/, '');
+  }
+  return path === '/' ? '' : path;
+})();
+
+function apiUrl(path) {
+  const normalized = path.startsWith('/') ? path : `/${path}`;
+  return `${API_BASE}${normalized}`;
+}
+
 function kes(value) {
   return `KES ${Number(value || 0).toLocaleString('en-KE')}`;
 }
@@ -74,7 +103,7 @@ async function parseStatementFile(file, password) {
   body.append('statement', file, file.name);
   if (password) body.append('statementPassword', password);
 
-  const response = await fetch('/api/v1/parse', { method: 'POST', body });
+  const response = await fetch(apiUrl('/api/v1/parse'), { method: 'POST', body });
   const data = await response.json();
   if (!response.ok) throw new Error(data.error || 'Failed to read statement');
   return data;
@@ -251,7 +280,7 @@ async function loadReconstruct(applicationId) {
   auditMeta.textContent = 'Loading FlexVertex audit trail…';
 
   try {
-    const response = await fetch(`/api/v1/applications/${encodeURIComponent(applicationId)}/reconstruct`);
+    const response = await fetch(apiUrl(`/api/v1/applications/${encodeURIComponent(applicationId)}/reconstruct`));
     const data = await response.json();
     if (!response.ok) {
       throw new Error(data.error || `Reconstruct failed (${response.status})`);
@@ -283,7 +312,7 @@ async function buildFormData() {
 
   if (currentMode() === 'sample') {
     if (!selectedSample) throw new Error('Choose a sample statement first.');
-    const res = await fetch(`/samples/${selectedSample}`);
+    const res = await fetch(apiUrl(`/samples/${selectedSample}`));
     if (!res.ok) throw new Error('Sample file not found.');
     const text = await res.text();
     body.append('statement', new Blob([text], { type: 'text/csv' }), selectedSample);
@@ -306,7 +335,7 @@ form.addEventListener('submit', async (e) => {
 
   try {
     const body = await buildFormData();
-    const response = await fetch('/api/v1/evaluate', { method: 'POST', body });
+    const response = await fetch(apiUrl('/api/v1/evaluate'), { method: 'POST', body });
     const data = await response.json();
 
     if (!response.ok) {

@@ -79,7 +79,9 @@ final class DemoSecurity {
         headers.set("Referrer-Policy", "no-referrer");
         headers.set("Cache-Control", "no-store");
         headers.set("Content-Security-Policy",
-                "default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'self'; base-uri 'self'; form-action 'self'");
+                "default-src 'self'; img-src 'self' data:; style-src 'self' https://fonts.googleapis.com; "
+                        + "font-src 'self' https://fonts.gstatic.com; script-src 'self'; connect-src 'self'; "
+                        + "base-uri 'self'; form-action 'self'");
     }
 
     static boolean isAllowedStaticPath(String path) {

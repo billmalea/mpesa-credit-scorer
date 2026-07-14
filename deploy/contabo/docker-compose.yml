@@ -1,0 +1,47 @@
+services:
+  flexvertex:
+    image: flexvertex/datamultiverse-iron:1.3.0
+    container_name: flexvertex
+    environment:
+      PASSWORD: ${FLEXVERTEX_PASSWORD:?set FLEXVERTEX_PASSWORD in .env}
+    volumes:
+      - flexvertex-data:/flexvertex
+    expose:
+      - "10000"
+    restart: unless-stopped
+
+  scorer:
+    build:
+      context: ../..
+      dockerfile: deploy/contabo/Dockerfile
+    environment:
+      FLEXVERTEX_HOST: flexvertex
+      FLEXVERTEX_PORT: 10000
+      FLEXVERTEX_PASSWORD: ${FLEXVERTEX_PASSWORD:?set FLEXVERTEX_PASSWORD in .env}
+      FLEXVERTEX_UNDERWRITER_PASSWORD: ${FLEXVERTEX_UNDERWRITER_PASSWORD:-}
+      SCORER_BASIC_AUTH: ${SCORER_BASIC_AUTH:?set SCORER_BASIC_AUTH in .env}
+    depends_on:
+      - flexvertex
+    expose:
+      - "8091"
+    restart: unless-stopped
+
+  caddy:
+    image: caddy:2.8-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      CADDY_EMAIL: ${CADDY_EMAIL:?set CADDY_EMAIL in .env}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      - scorer
+    restart: unless-stopped
+
+volumes:
+  flexvertex-data:
+  caddy-data:
+  caddy-config:
