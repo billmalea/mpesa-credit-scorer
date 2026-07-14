@@ -19,7 +19,8 @@ services:
       FLEXVERTEX_PORT: 10000
       FLEXVERTEX_PASSWORD: ${FLEXVERTEX_PASSWORD:?set FLEXVERTEX_PASSWORD in .env}
       FLEXVERTEX_UNDERWRITER_PASSWORD: ${FLEXVERTEX_UNDERWRITER_PASSWORD:-}
-      SCORER_BASIC_AUTH: ${SCORER_BASIC_AUTH:?set SCORER_BASIC_AUTH in .env}
+      # Leave empty / unset to expose the UI publicly (no Basic Auth).
+      SCORER_BASIC_AUTH: ${SCORER_BASIC_AUTH:-}
     depends_on:
       - flexvertex
     expose:
