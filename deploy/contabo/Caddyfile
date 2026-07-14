@@ -2,9 +2,14 @@
 	email {$CADDY_EMAIL}
 }
 
-# Vercel rewrites /mpesa-scorer/:path* to this host's /:path*.
-# The scorer therefore remains root-mounted and is not aware of the public prefix.
+# Public hostname (direct access + TLS).
 scorer.ttacs.co.ke {
+	encode zstd gzip
+	reverse_proxy scorer:8091
+}
+
+# Vercel rewrites /mpesa-scorer/* to the Contabo IP (avoids scorer.* resolving to Vercel).
+http://169.58.16.179 {
 	encode zstd gzip
 	reverse_proxy scorer:8091
 }

@@ -9,11 +9,11 @@
   "rewrites": [
     {
       "source": "/mpesa-scorer/",
-      "destination": "https://scorer.ttacs.co.ke/"
+      "destination": "http://169.58.16.179/"
     },
     {
       "source": "/mpesa-scorer/:path*",
-      "destination": "https://scorer.ttacs.co.ke/:path*"
+      "destination": "http://169.58.16.179/:path*"
     },
     {
       "source": "/(.*)",
