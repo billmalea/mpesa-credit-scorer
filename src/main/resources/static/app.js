@@ -57,18 +57,28 @@ function storeTermsAcceptance() {
 }
 
 function openTermsModal() {
+  if (!termsModal) {
+    return;
+  }
   termsModal.classList.remove('hidden');
 }
 
 function closeTermsModal() {
+  if (!termsModal) {
+    return;
+  }
   termsModal.classList.add('hidden');
 }
 
 function unlockScorer() {
   termsAccepted = true;
   document.body.classList.remove('terms-locked');
-  termsGate.classList.add('hidden');
-  scorerMain.removeAttribute('inert');
+  if (termsGate) {
+    termsGate.classList.add('hidden');
+  }
+  if (scorerMain) {
+    scorerMain.removeAttribute('inert');
+  }
   closeTermsModal();
 }
 
@@ -88,43 +98,66 @@ function requireTerms(event) {
 }
 
 function syncTermsContinue() {
+  if (!termsContinueBtn || !termsCheckbox) {
+    return;
+  }
   termsContinueBtn.disabled = !termsCheckbox.checked;
 }
 
-termsCheckbox.addEventListener('change', syncTermsContinue);
-
-termsContinueBtn.addEventListener('click', () => {
-  if (!termsCheckbox.checked) {
+function acceptTermsAndUnlock() {
+  if (!termsCheckbox || !termsCheckbox.checked) {
+    syncTermsContinue();
     return;
   }
   storeTermsAcceptance();
   unlockScorer();
-});
+}
 
-viewTermsBtn.addEventListener('click', openTermsModal);
-termsModalClose.addEventListener('click', closeTermsModal);
-termsModalDone.addEventListener('click', closeTermsModal);
-termsModal.addEventListener('click', (e) => {
-  if (e.target === termsModal) {
-    closeTermsModal();
-  }
-});
+if (termsCheckbox) {
+  termsCheckbox.addEventListener('change', syncTermsContinue);
+  termsCheckbox.addEventListener('input', syncTermsContinue);
+}
 
-reopenTermsBtn.addEventListener('click', openTermsModal);
+if (termsContinueBtn) {
+  termsContinueBtn.addEventListener('click', acceptTermsAndUnlock);
+}
+
+if (viewTermsBtn) {
+  viewTermsBtn.addEventListener('click', openTermsModal);
+}
+if (termsModalClose) {
+  termsModalClose.addEventListener('click', closeTermsModal);
+}
+if (termsModalDone) {
+  termsModalDone.addEventListener('click', closeTermsModal);
+}
+if (termsModal) {
+  termsModal.addEventListener('click', (e) => {
+    if (e.target === termsModal) {
+      closeTermsModal();
+    }
+  });
+}
+
+if (reopenTermsBtn) {
+  reopenTermsBtn.addEventListener('click', openTermsModal);
+}
 
 const apiComingSoonBtn = document.getElementById('api-coming-soon-btn');
 const apiComingSoon = document.getElementById('api-coming-soon');
 let apiSoonTimer = null;
 
-apiComingSoonBtn.addEventListener('click', () => {
-  apiComingSoon.classList.remove('hidden');
-  if (apiSoonTimer) {
-    clearTimeout(apiSoonTimer);
-  }
-  apiSoonTimer = setTimeout(() => {
-    apiComingSoon.classList.add('hidden');
-  }, 2500);
-});
+if (apiComingSoonBtn && apiComingSoon) {
+  apiComingSoonBtn.addEventListener('click', () => {
+    apiComingSoon.classList.remove('hidden');
+    if (apiSoonTimer) {
+      clearTimeout(apiSoonTimer);
+    }
+    apiSoonTimer = setTimeout(() => {
+      apiComingSoon.classList.add('hidden');
+    }, 2500);
+  });
+}
 
 if (hasStoredTermsAcceptance()) {
   unlockScorer();

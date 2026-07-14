@@ -737,12 +737,14 @@ body.terms-locked {
   inset: 0;
   z-index: 100;
   display: flex;
+  /* Always top-align: center + margin:auto clips Continue on short/laptop viewports */
   align-items: flex-start;
   justify-content: center;
+  overflow-x: hidden;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
-  padding: max(0.85rem, env(safe-area-inset-top)) 1rem max(1.25rem, env(safe-area-inset-bottom));
+  padding: max(1rem, env(safe-area-inset-top)) 1rem max(1.75rem, env(safe-area-inset-bottom));
   background:
     linear-gradient(180deg, rgba(250, 246, 239, 0.92) 0%, rgba(243, 236, 226, 0.96) 100%);
   backdrop-filter: blur(6px);
@@ -754,22 +756,13 @@ body.terms-locked {
 
 .terms-card {
   width: min(560px, 100%);
-  margin: auto 0;
+  flex: 0 0 auto;
+  margin: 0;
   padding: 1.2rem 1.15rem 1.15rem;
   max-height: none;
 }
 
-@media (min-height: 720px) {
-  .terms-gate {
-    align-items: center;
-  }
-}
-
 @media (max-height: 719px) {
-  .terms-card {
-    margin: 0.25rem 0 1rem;
-  }
-
   .terms-card-head h2 {
     font-size: 1.3rem;
   }
