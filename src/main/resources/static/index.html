@@ -8,40 +8,44 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" type="image/png" href="ttacs-mark.png" />
 </head>
 <body class="terms-locked">
   <div id="terms-gate" class="terms-gate" role="dialog" aria-modal="true" aria-labelledby="terms-gate-title">
-    <div class="terms-console" aria-live="polite">
-      <pre class="terms-console-frame" id="terms-gate-title">+--------------------------------------------------------------+
-|          M-PESA COMPLIANCE &amp; SCORING CONSENT                 |
-+--------------------------------------------------------------+
-|                                                              |
-|  Before uploading your statement, please note:               |
-|                                                              |
-|  [>] PRIVACY-BY-DESIGN                                       |
-|      Raw M-Pesa text and personal identifiers are stripped   |
-|      at ingestion. Only mathematical metadata is scored.     |
-|                                                              |
-|  [>] RIGHT TO EXPLANATION                                    |
-|      If a rule fails, you may request a decision replay      |
-|      under Kenya Data Protection Act, Section 35 (ODPC).     |
-|                                                              |
-|  [>] FRAUD / AML CHECKS                                      |
-|      The scorecard screens loop-funding and artificial       |
-|      inflow patterns consistent with POCAMLA controls.       |
-|                                                              |
-+--------------------------------------------------------------+</pre>
+    <div class="terms-card panel" aria-live="polite">
+      <div class="panel-head terms-card-head">
+        <p class="eyebrow">Before you continue</p>
+        <h2 id="terms-gate-title">Compliance &amp; scoring consent</h2>
+        <p>Please review these points before uploading a statement or running a sample.</p>
+      </div>
+
+      <ul class="terms-points">
+        <li>
+          <span class="terms-point-label">Privacy by design</span>
+          <span class="terms-point-copy">Raw M-Pesa text and personal identifiers are stripped at ingestion. Only mathematical metadata is scored.</span>
+        </li>
+        <li>
+          <span class="terms-point-label">Right to explanation</span>
+          <span class="terms-point-copy">If a rule fails, you may request a decision replay under the Kenya Data Protection Act, Section 35 (ODPC).</span>
+        </li>
+        <li>
+          <span class="terms-point-label">Fraud &amp; AML checks</span>
+          <span class="terms-point-copy">The scorecard screens loop-funding and artificial inflow patterns consistent with POCAMLA controls.</span>
+        </li>
+      </ul>
+
       <div class="terms-accept-row">
         <label class="terms-check">
           <input type="checkbox" id="terms-checkbox" />
           <span>I accept the Terms &amp; Conditions</span>
         </label>
-        <button type="button" class="terms-link-btn" id="view-terms-btn">View full document</button>
+        <button type="button" class="btn-secondary" id="view-terms-btn">View full document</button>
       </div>
+
       <button type="button" class="submit-btn terms-continue-btn" id="terms-continue-btn" disabled>
         Continue to scorer
       </button>
-      <p class="terms-gate-note">You must accept before uploading a statement or running a sample.</p>
+      <p class="terms-gate-note">Acceptance is required before any evaluation.</p>
     </div>
   </div>
 
@@ -129,7 +133,7 @@
   <header class="header">
     <div class="container header-inner">
       <div class="brand">
-        <div class="brand-mark" aria-hidden="true">TT</div>
+        <img class="brand-mark" src="ttacs-mark.png" width="56" height="41" alt="TTACS Consulting" />
         <div>
           <p class="eyebrow">Statement underwriting</p>
           <h1>M-Pesa Credit Scorer</h1>
@@ -137,7 +141,7 @@
       </div>
       <div class="header-meta">
         <span class="pill">Deterministic rules</span>
-        <button type="button" class="terms-link-btn header-terms-btn" id="reopen-terms-btn">Terms</button>
+        <button type="button" class="btn-secondary header-terms-btn" id="reopen-terms-btn">Terms</button>
         <a href="health" target="_blank" rel="noreferrer">API</a>
       </div>
     </div>

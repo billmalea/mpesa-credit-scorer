@@ -18,7 +18,10 @@ final class StaticResourceHandler implements HttpHandler {
             "js", "application/javascript; charset=utf-8",
             "csv", "text/csv; charset=utf-8",
             "svg", "image/svg+xml",
-            "ico", "image/x-icon"
+            "ico", "image/x-icon",
+            "png", "image/png",
+            "jpg", "image/jpeg",
+            "jpeg", "image/jpeg"
     );
 
     @Override

@@ -21,7 +21,9 @@ final class DemoSecurity {
             "/index.html",
             "/app.js",
             "/styles.css",
-            "/favicon.ico"
+            "/favicon.ico",
+            "/favicon.png",
+            "/ttacs-mark.png"
     );
 
     private DemoSecurity() {

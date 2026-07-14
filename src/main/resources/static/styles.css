@@ -64,16 +64,14 @@ body {
 }
 
 .brand-mark {
-  width: 42px;
-  height: 42px;
-  border-radius: 12px;
-  display: grid;
-  place-items: center;
-  font-weight: 700;
-  font-size: 0.82rem;
-  letter-spacing: 0.04em;
-  color: #fff;
-  background: var(--forest);
+  width: 56px;
+  height: 41px;
+  object-fit: contain;
+  object-position: center;
+  display: block;
+  flex-shrink: 0;
+  border-radius: 0;
+  background: transparent;
 }
 
 .header h1 {
@@ -687,7 +685,7 @@ body {
 
 .footer p { margin: 0; }
 
-/* —— Terms gate —— */
+/* —— Terms gate (matches site panel theme) —— */
 body.terms-locked {
   overflow: hidden;
 }
@@ -700,34 +698,68 @@ body.terms-locked {
   place-items: center;
   padding: 1.25rem;
   background:
-    radial-gradient(ellipse at 30% 20%, rgba(31, 77, 58, 0.35), transparent 50%),
-    rgba(15, 14, 12, 0.88);
-  backdrop-filter: blur(8px);
+    linear-gradient(180deg, rgba(250, 246, 239, 0.92) 0%, rgba(243, 236, 226, 0.96) 100%);
+  backdrop-filter: blur(6px);
 }
 
 .terms-gate.hidden {
   display: none;
 }
 
-.terms-console {
-  width: min(640px, 100%);
-  background: #0a0a0a;
-  border: 1px solid #3a3a3a;
-  border-radius: 4px;
-  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.55);
-  padding: 1rem 1rem 1.15rem;
-  color: #e8e8e8;
-  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+.terms-card {
+  width: min(560px, 100%);
+  margin: 0;
+  padding: 1.35rem 1.4rem 1.25rem;
 }
 
-.terms-console-frame {
-  margin: 0 0 1rem;
+.terms-card-head {
+  margin-bottom: 1rem;
+}
+
+.terms-card-head h2 {
+  margin: 0.15rem 0 0.45rem;
+  font-family: var(--font-display);
+  font-size: 1.55rem;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.terms-card-head p:last-child {
+  margin: 0;
+  color: var(--ink-muted);
+  font-size: 0.92rem;
+}
+
+.terms-points {
+  list-style: none;
+  margin: 0 0 1.15rem;
   padding: 0;
-  white-space: pre-wrap;
-  font-size: clamp(0.62rem, 1.7vw, 0.78rem);
-  line-height: 1.35;
-  color: #f0f0f0;
-  overflow-x: auto;
+  display: grid;
+  gap: 0.7rem;
+}
+
+.terms-points li {
+  padding: 0.85rem 0.95rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line);
+  background: var(--paper-2);
+}
+
+.terms-point-label {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--forest);
+  margin-bottom: 0.25rem;
+}
+
+.terms-point-copy {
+  display: block;
+  font-size: 0.9rem;
+  color: var(--ink);
+  line-height: 1.5;
 }
 
 .terms-accept-row {
@@ -736,60 +768,45 @@ body.terms-locked {
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
-  margin-bottom: 0.85rem;
-  padding: 0 0.15rem;
+  margin-bottom: 0.95rem;
 }
 
 .terms-check {
   display: flex;
   align-items: flex-start;
   gap: 0.55rem;
-  font-size: 0.82rem;
+  font-size: 0.9rem;
+  font-weight: 500;
   cursor: pointer;
   user-select: none;
+  color: var(--ink);
 }
 
 .terms-check input {
   margin-top: 0.2rem;
-  width: 1rem;
-  height: 1rem;
-  accent-color: #6ee7a8;
-}
-
-.terms-link-btn {
-  appearance: none;
-  border: 1px solid #555;
-  background: transparent;
-  color: #9fd4b5;
-  font: inherit;
-  font-size: 0.78rem;
-  padding: 0.35rem 0.65rem;
-  border-radius: 4px;
-  cursor: pointer;
-  text-decoration: none;
-}
-
-.terms-link-btn:hover {
-  border-color: #8fd4b0;
-  color: #c8f0d8;
+  width: 1.05rem;
+  height: 1.05rem;
+  accent-color: var(--forest);
 }
 
 .header-terms-btn {
-  border-color: var(--line);
-  color: var(--forest);
-  background: var(--forest-soft);
-  font-family: var(--font);
+  font-size: 0.82rem;
+  padding: 0.35rem 0.75rem;
+}
+
+.terms-continue-btn {
+  width: 100%;
 }
 
 .terms-continue-btn:disabled {
-  opacity: 0.4;
+  opacity: 0.45;
   cursor: not-allowed;
 }
 
 .terms-gate-note {
-  margin: 0.7rem 0 0;
-  font-size: 0.72rem;
-  color: #9a9a9a;
+  margin: 0.75rem 0 0;
+  font-size: 0.78rem;
+  color: var(--ink-muted);
   text-align: center;
 }
 
@@ -800,7 +817,7 @@ body.terms-locked {
   display: grid;
   place-items: center;
   padding: 1rem;
-  background: rgba(15, 14, 12, 0.72);
+  background: rgba(31, 26, 20, 0.45);
 }
 
 .terms-modal.hidden {
@@ -854,6 +871,7 @@ body.terms-locked {
 .terms-modal-body h3 {
   margin: 1.1rem 0 0.4rem;
   font-size: 0.95rem;
+  color: var(--forest);
 }
 
 .terms-modal-body p,
