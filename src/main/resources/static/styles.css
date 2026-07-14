@@ -106,6 +106,43 @@ body {
 
 .header-meta a:hover { text-decoration: underline; }
 
+.header-api-btn {
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: var(--forest);
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+  padding: 0;
+  cursor: pointer;
+}
+
+.header-api-btn:hover {
+  text-decoration: underline;
+}
+
+.api-coming-soon {
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--copper);
+  background: var(--copper-soft);
+  border: 1px solid #f0d0a8;
+  border-radius: 999px;
+  padding: 0.28rem 0.65rem;
+  white-space: nowrap;
+  animation: api-soon-in 160ms ease-out;
+}
+
+.api-coming-soon.hidden {
+  display: none;
+}
+
+@keyframes api-soon-in {
+  from { opacity: 0; transform: translateY(2px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 .pill {
   font-size: 0.74rem;
   padding: 0.35rem 0.7rem;

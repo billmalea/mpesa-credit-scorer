@@ -112,6 +112,20 @@ termsModal.addEventListener('click', (e) => {
 
 reopenTermsBtn.addEventListener('click', openTermsModal);
 
+const apiComingSoonBtn = document.getElementById('api-coming-soon-btn');
+const apiComingSoon = document.getElementById('api-coming-soon');
+let apiSoonTimer = null;
+
+apiComingSoonBtn.addEventListener('click', () => {
+  apiComingSoon.classList.remove('hidden');
+  if (apiSoonTimer) {
+    clearTimeout(apiSoonTimer);
+  }
+  apiSoonTimer = setTimeout(() => {
+    apiComingSoon.classList.add('hidden');
+  }, 2500);
+});
+
 if (hasStoredTermsAcceptance()) {
   unlockScorer();
 } else {
