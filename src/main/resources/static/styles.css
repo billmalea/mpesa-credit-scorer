@@ -694,9 +694,13 @@ body.terms-locked {
   position: fixed;
   inset: 0;
   z-index: 100;
-  display: grid;
-  place-items: center;
-  padding: 1.25rem;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  padding: max(0.85rem, env(safe-area-inset-top)) 1rem max(1.25rem, env(safe-area-inset-bottom));
   background:
     linear-gradient(180deg, rgba(250, 246, 239, 0.92) 0%, rgba(243, 236, 226, 0.96) 100%);
   backdrop-filter: blur(6px);
@@ -708,8 +712,34 @@ body.terms-locked {
 
 .terms-card {
   width: min(560px, 100%);
-  margin: 0;
-  padding: 1.35rem 1.4rem 1.25rem;
+  margin: auto 0;
+  padding: 1.2rem 1.15rem 1.15rem;
+  max-height: none;
+}
+
+@media (min-height: 720px) {
+  .terms-gate {
+    align-items: center;
+  }
+}
+
+@media (max-height: 719px) {
+  .terms-card {
+    margin: 0.25rem 0 1rem;
+  }
+
+  .terms-card-head h2 {
+    font-size: 1.3rem;
+  }
+
+  .terms-points {
+    gap: 0.55rem;
+    margin-bottom: 0.9rem;
+  }
+
+  .terms-points li {
+    padding: 0.7rem 0.8rem;
+  }
 }
 
 .terms-card-head {

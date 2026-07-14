@@ -25,7 +25,7 @@ const reconstructBtn = document.getElementById('reconstruct-btn');
 const reconstructSteps = document.getElementById('reconstruct-steps');
 const offerWarning = document.getElementById('offer-warning');
 
-const TERMS_STORAGE_KEY = 'ttacs.mpesaScorer.termsAccepted.v1';
+const TERMS_STORAGE_KEY = 'ttacs.mpesaScorer.termsAccepted.v2';
 const termsGate = document.getElementById('terms-gate');
 const termsModal = document.getElementById('terms-modal');
 const termsCheckbox = document.getElementById('terms-checkbox');
