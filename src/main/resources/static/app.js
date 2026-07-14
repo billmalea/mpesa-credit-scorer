@@ -25,8 +25,98 @@ const reconstructBtn = document.getElementById('reconstruct-btn');
 const reconstructSteps = document.getElementById('reconstruct-steps');
 const offerWarning = document.getElementById('offer-warning');
 
+const TERMS_STORAGE_KEY = 'ttacs.mpesaScorer.termsAccepted.v1';
+const termsGate = document.getElementById('terms-gate');
+const termsModal = document.getElementById('terms-modal');
+const termsCheckbox = document.getElementById('terms-checkbox');
+const termsContinueBtn = document.getElementById('terms-continue-btn');
+const viewTermsBtn = document.getElementById('view-terms-btn');
+const termsModalClose = document.getElementById('terms-modal-close');
+const termsModalDone = document.getElementById('terms-modal-done');
+const reopenTermsBtn = document.getElementById('reopen-terms-btn');
+const scorerMain = document.getElementById('scorer-main');
+
 let selectedSample = null;
 let lastApplicationId = null;
+let termsAccepted = false;
+
+function hasStoredTermsAcceptance() {
+  try {
+    return localStorage.getItem(TERMS_STORAGE_KEY) === '1';
+  } catch {
+    return false;
+  }
+}
+
+function storeTermsAcceptance() {
+  try {
+    localStorage.setItem(TERMS_STORAGE_KEY, '1');
+  } catch {
+    // private mode / blocked storage — session-only gate still works
+  }
+}
+
+function openTermsModal() {
+  termsModal.classList.remove('hidden');
+}
+
+function closeTermsModal() {
+  termsModal.classList.add('hidden');
+}
+
+function unlockScorer() {
+  termsAccepted = true;
+  document.body.classList.remove('terms-locked');
+  termsGate.classList.add('hidden');
+  scorerMain.removeAttribute('inert');
+  closeTermsModal();
+}
+
+function requireTerms(event) {
+  if (termsAccepted) {
+    return false;
+  }
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+  termsGate.classList.remove('hidden');
+  document.body.classList.add('terms-locked');
+  statusEl.className = 'status error';
+  statusEl.textContent = 'Accept the Terms & Conditions before using the scorer.';
+  return true;
+}
+
+function syncTermsContinue() {
+  termsContinueBtn.disabled = !termsCheckbox.checked;
+}
+
+termsCheckbox.addEventListener('change', syncTermsContinue);
+
+termsContinueBtn.addEventListener('click', () => {
+  if (!termsCheckbox.checked) {
+    return;
+  }
+  storeTermsAcceptance();
+  unlockScorer();
+});
+
+viewTermsBtn.addEventListener('click', openTermsModal);
+termsModalClose.addEventListener('click', closeTermsModal);
+termsModalDone.addEventListener('click', closeTermsModal);
+termsModal.addEventListener('click', (e) => {
+  if (e.target === termsModal) {
+    closeTermsModal();
+  }
+});
+
+reopenTermsBtn.addEventListener('click', openTermsModal);
+
+if (hasStoredTermsAcceptance()) {
+  unlockScorer();
+} else {
+  syncTermsContinue();
+}
 
 const RING_CIRCUMFERENCE = 327;
 
@@ -119,9 +209,17 @@ modeRadios.forEach((radio) => {
   });
 });
 
-pickFileBtn.addEventListener('click', () => fileInput.click());
+pickFileBtn.addEventListener('click', (e) => {
+  if (requireTerms(e)) {
+    return;
+  }
+  fileInput.click();
+});
 
 async function onFileSelected(file) {
+  if (requireTerms()) {
+    return;
+  }
   if (!file) {
     selectedFileEl.textContent = 'No file selected';
     clearIdentity();
@@ -156,6 +254,9 @@ uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag
 uploadZone.addEventListener('drop', (e) => {
   e.preventDefault();
   uploadZone.classList.remove('dragover');
+  if (requireTerms(e)) {
+    return;
+  }
   const file = e.dataTransfer?.files?.[0];
   if (file) {
     fileInput.files = e.dataTransfer.files;
@@ -170,7 +271,10 @@ form.statementPassword.addEventListener('change', () => {
 });
 
 document.querySelectorAll('.sample-card').forEach((card) => {
-  card.addEventListener('click', async () => {
+  card.addEventListener('click', async (e) => {
+    if (requireTerms(e)) {
+      return;
+    }
     document.querySelectorAll('.sample-card').forEach((c) => c.classList.remove('selected'));
     card.classList.add('selected');
     selectedSample = card.dataset.sample;
@@ -329,6 +433,9 @@ async function buildFormData() {
 
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
+  if (requireTerms(e)) {
+    return;
+  }
   statusEl.className = 'status';
   statusEl.textContent = 'Parsing statement and running scorecard…';
   setLoading(true);

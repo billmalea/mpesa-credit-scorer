@@ -9,7 +9,123 @@
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
-<body>
+<body class="terms-locked">
+  <div id="terms-gate" class="terms-gate" role="dialog" aria-modal="true" aria-labelledby="terms-gate-title">
+    <div class="terms-console" aria-live="polite">
+      <pre class="terms-console-frame" id="terms-gate-title">+--------------------------------------------------------------+
+|          M-PESA COMPLIANCE &amp; SCORING CONSENT                 |
++--------------------------------------------------------------+
+|                                                              |
+|  Before uploading your statement, please note:               |
+|                                                              |
+|  [>] PRIVACY-BY-DESIGN                                       |
+|      Raw M-Pesa text and personal identifiers are stripped   |
+|      at ingestion. Only mathematical metadata is scored.     |
+|                                                              |
+|  [>] RIGHT TO EXPLANATION                                    |
+|      If a rule fails, you may request a decision replay      |
+|      under Kenya Data Protection Act, Section 35 (ODPC).     |
+|                                                              |
+|  [>] FRAUD / AML CHECKS                                      |
+|      The scorecard screens loop-funding and artificial       |
+|      inflow patterns consistent with POCAMLA controls.       |
+|                                                              |
++--------------------------------------------------------------+</pre>
+      <div class="terms-accept-row">
+        <label class="terms-check">
+          <input type="checkbox" id="terms-checkbox" />
+          <span>I accept the Terms &amp; Conditions</span>
+        </label>
+        <button type="button" class="terms-link-btn" id="view-terms-btn">View full document</button>
+      </div>
+      <button type="button" class="submit-btn terms-continue-btn" id="terms-continue-btn" disabled>
+        Continue to scorer
+      </button>
+      <p class="terms-gate-note">You must accept before uploading a statement or running a sample.</p>
+    </div>
+  </div>
+
+  <div id="terms-modal" class="terms-modal hidden" role="dialog" aria-modal="true" aria-labelledby="terms-modal-title">
+    <div class="terms-modal-card">
+      <div class="terms-modal-head">
+        <h2 id="terms-modal-title">Terms &amp; Conditions</h2>
+        <button type="button" class="terms-modal-close" id="terms-modal-close" aria-label="Close">×</button>
+      </div>
+      <div class="terms-modal-body">
+        <p class="terms-meta">TTACS M-Pesa Credit Scorer · Effective for this session · Kenya</p>
+
+        <h3>1. Purpose of this tool</h3>
+        <p>
+          This service evaluates M-Pesa statement exports to produce a deterministic credit
+          eligibility score, affordability estimate, and rule findings. It supports underwriting
+          decisions and provides an optional FlexVertex audit trail for decision reconstruction.
+        </p>
+
+        <h3>2. What you consent to</h3>
+        <p>By accepting, you confirm that:</p>
+        <ul>
+          <li>you are authorised to submit the statement for scoring;</li>
+          <li>you understand the output is automated assistance to a human decision process;</li>
+          <li>you have read the summary points on privacy, explanation rights, and fraud checks.</li>
+        </ul>
+
+        <h3>3. Privacy by design</h3>
+        <p>
+          Statement text is parsed for underwriting features. Raw narrative and avoidable personal
+          detail are minimised in favour of structured metadata (amounts, timing, counterparty
+          patterns, and similar features). Scoring runs within this service’s deployment boundary.
+        </p>
+
+        <h3>4. Right to explanation (Data Protection Act, Section 35)</h3>
+        <p>
+          Where an automated or partly automated decision adversely affects you, you may request
+          a clear explanation of the material rule outcomes. Where FlexVertex audit is enabled,
+          decision reconstruction can replay the recorded evaluation path for that application.
+        </p>
+
+        <h3>5. Fraud and AML-oriented checks</h3>
+        <p>
+          The scorecard may flag patterns consistent with circular funding, artificial inflow
+          inflation, or related abuse indicators. These checks support POCAMLA-aligned controls
+          for the operator; they are not a finding of criminal liability.
+        </p>
+
+        <h3>6. Accuracy and limits</h3>
+        <p>
+          Results depend on the completeness and authenticity of the uploaded statement and on the
+          active policy rules. Declined, referred, or approved outcomes are recommendations for
+          review—not a guarantee of credit. The tool does not itself constitute a CBK-licensed
+          Digital Credit Provider (DCP) or a loan contract.
+        </p>
+
+        <h3>7. Retention and location</h3>
+        <p>
+          Audit and evaluation records, where stored, remain under the operator’s deployment
+          (including Contabo / enterprise perimeter for this instance). Operators remain responsible
+          for Kenya data-localisation and retention requirements applicable to their licence.
+        </p>
+
+        <h3>8. Operator compliance (not part of consumer click-through)</h3>
+        <p>
+          Full production use by a lender also requires institutional steps outside this screen,
+          including DPIA engagement with the ODPC where automated decision-making applies,
+          CBK DCP algorithm-transparency arrangements where relevant, and confirmation that
+          sensitive financial processing stays within Kenya as required. This click-wrap does not
+          replace those obligations.
+        </p>
+
+        <h3>9. Changes</h3>
+        <p>
+          Terms may be updated with product releases. Continued use after notice of material
+          changes constitutes acceptance of the revised terms for new evaluations.
+        </p>
+      </div>
+      <div class="terms-modal-foot">
+        <button type="button" class="btn-secondary" id="terms-modal-done">Close</button>
+      </div>
+    </div>
+  </div>
+
   <header class="header">
     <div class="container header-inner">
       <div class="brand">
@@ -21,12 +137,13 @@
       </div>
       <div class="header-meta">
         <span class="pill">Deterministic rules</span>
+        <button type="button" class="terms-link-btn header-terms-btn" id="reopen-terms-btn">Terms</button>
         <a href="health" target="_blank" rel="noreferrer">API</a>
       </div>
     </div>
   </header>
 
-  <main class="container layout">
+  <main id="scorer-main" class="container layout" inert>
     <section class="panel form-panel">
       <div class="panel-head">
         <h2>Evaluate statement</h2>
